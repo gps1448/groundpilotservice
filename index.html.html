@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE WAY — Ground Pilot Service</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;1,300&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #FFB800;
+    --navy: #092357;
+    --black: #0A0A0A;
+    --white: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     LOGO SECTION
+  ══════════════════════════════════════════════════════════ */
+  .logo-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+  }
+
+  .logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    opacity: 0;
+    animation: rise 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s;
+  }
+
+  /*
+  ── LOGO IMAGE ─────────────────────────────────────────────
+  When your logo file is ready:
+  Replace the .logo-ring div with:
+  <img src="YOUR_FILE.png" class="logo-img" alt="GP">
+  Use the transparent-background version (gold on clear).
+  ──────────────────────────────────────────────────────────
+  */
+  .logo-img {
+    width: clamp(140px, 22vw, 200px);
+    height: clamp(140px, 22vw, 200px);
+    object-fit: contain;
+  }
+
+  .logo-ring {
+    width: clamp(140px, 22vw, 200px);
+    height: clamp(140px, 22vw, 200px);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 184, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 0 40px rgba(255,184,0,0.06);
+  }
+
+  .logo-gp {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 8vw, 80px);
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: 4px;
+  }
+
+  .logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(9px, 1.2vw, 12px);
+    color: rgba(255, 184, 0, 0.6);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+  }
+
+  .logo-sub {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.14);
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     OPENING STACK
+     THE WAY → Follow Me → This IS THE WAY → GPS IS THE WAY → I'm Out Here
+  ══════════════════════════════════════════════════════════ */
+  .open-stack {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 100px 60px;
+    border-top: 1px solid rgba(255, 184, 0, 0.07);
+  }
+
+  /* THE WAY — the title. Biggest. The hook. The mystery. */
+  .os-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 16vw, 200px);
+    color: var(--gold);
+    line-height: 0.85;
+    letter-spacing: 3px;
+  }
+
+  /* Follow Me — smaller, title case, soft landing after the hit */
+  .os-follow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 5vw, 58px);
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.1;
+    font-style: italic;
+    margin-top: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* This IS THE WAY — mixed caps, the finger point */
+  .os-point {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6.5vw, 78px);
+    line-height: 1;
+    margin-top: 10px;
+    letter-spacing: 2px;
+  }
+
+  .os-point .soft { color: rgba(255,255,255,0.28); font-family: 'Cormorant Garamond', serif; font-size: 0.72em; vertical-align: baseline; font-style: italic; }
+  .os-point .hard { color: rgba(255,255,255,0.75); }
+
+  /* GPS IS THE WAY — full caps, imperative */
+  .os-imperative {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 9.5vw, 118px);
+    color: var(--white);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    margin-top: 8px;
+  }
+
+  /* I'm Out Here — personal, warm close of the opening */
+  .os-presence {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3.5vw, 40px);
+    color: rgba(255, 184, 0, 0.5);
+    font-style: italic;
+    margin-top: 20px;
+    letter-spacing: 2px;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     TOOLS SECTION
+  ══════════════════════════════════════════════════════════ */
+  .tools-section {
+    padding: 100px 60px;
+    background: #0c0c0c;
+    border-top: 1px solid rgba(255, 184, 0, 0.07);
+  }
+
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1px;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .tool {
+    background: var(--black);
+    padding: 44px 38px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.25s;
+  }
+
+  .tool:hover { background: #111; }
+
+  .tool-n {
+    position: absolute;
+    top: 20px; right: 22px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(255,184,0,0.03);
+    line-height: 1;
+  }
+
+  .tool-tag {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(255, 184, 0, 0.5);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .tool h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .tool p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.3);
+    flex: 1;
+  }
+
+  .tool-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 26px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid;
+    display: inline-block;
+  }
+
+  .live  { border-color: rgba(255,184,0,0.28); color: var(--gold); }
+  .build { border-color: rgba(255,255,255,0.07); color: rgba(255,255,255,0.16); }
+
+  .tool-link {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.14);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .tool-link:hover { color: var(--gold); border-color: rgba(255,184,0,0.3); }
+  .tool-link.pending { pointer-events: none; }
+
+  /* ══════════════════════════════════════════════════════════
+     CLOSING STACK
+     THIS IS THE WAY → GPS IS THE WAY → Follow Me → I'm Out Here
+  ══════════════════════════════════════════════════════════ */
+  .close-stack {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 40px;
+    background: var(--black);
+    border-top: 3px solid rgba(255,184,0,0.35);
+  }
+
+  .stack { display: flex; flex-direction: column; align-items: center; }
+
+  /* THIS IS THE WAY — pointing at the body of work just shown */
+  .cs-declare {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 8vw, 100px);
+    color: rgba(255,255,255,0.65);
+    line-height: 0.88;
+    letter-spacing: 2px;
+  }
+
+  /* GPS IS THE WAY — the company IS the doctrine */
+  .cs-gps {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 8vw, 100px);
+    color: var(--white);
+    line-height: 0.88;
+    letter-spacing: 2px;
+  }
+
+  /* Follow Me — the invitation, mid weight, drops into personal */
+  .cs-follow {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 4vw, 48px);
+    color: rgba(255,255,255,0.35);
+    font-style: italic;
+    margin: 16px 0 10px;
+    letter-spacing: 2px;
+  }
+
+  /* I'm Out Here — gold, final. The boom. Closes everything. */
+  .cs-out {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 10vw, 130px);
+    color: var(--gold);
+    line-height: 0.88;
+    letter-spacing: 2px;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     FOOTER
+  ══════════════════════════════════════════════════════════ */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.04);
+    padding: 44px 60px;
+  }
+
+  .foot {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .foot-id {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.14);
+    line-height: 2.2;
+    letter-spacing: 0.5px;
+  }
+
+  .foot-id a { color: rgba(255,184,0,0.3); text-decoration: none; }
+  .foot-id a:hover { color: var(--gold); }
+
+  .foot-right {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.14);
+    line-height: 2.2;
+    letter-spacing: 0.5px;
+    text-align: right;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 680px) {
+    .open-stack, .tools-section, footer { padding: 80px 28px; }
+    .close-stack { padding: 60px 28px; }
+    .logo-section { padding: 60px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ LOGO ══════════════════════════════════════════════════ -->
+<section class="logo-section">
+  <div class="logo-wrap">
+
+    <!--
+    LOGO SWAP: When your file is ready, replace .logo-ring with:
+    <img src="YOUR_LOGO.png" class="logo-img" alt="Ground Pilot Service">
+    -->
+    <div class="logo-ring">
+      <span class="logo-gp">GP</span>
+      <span class="logo-text">Ground Pilot</span>
+    </div>
+
+    <p class="logo-sub">Ground Pilot Service LLC &nbsp;·&nbsp; Est. April 2019</p>
+  </div>
+</section>
+
+<!-- ══ OPENING STACK ══════════════════════════════════════════
+     THE WAY         ← title / hook / mystery
+     Follow Me       ← soft, italic — brings the question
+     This IS THE WAY ← the finger point at the doctrine
+     GPS IS THE WAY  ← imperative — the company is the doctrine
+     I'm Out Here    ← warm close, personal, presence confirmed
+════════════════════════════════════════════════════════════ -->
+<section class="open-stack">
+
+  <div class="os-title">THE WAY</div>
+
+  <div class="os-follow">Follow Me</div>
+
+  <div class="os-point">
+    <span class="soft">This&nbsp;</span><span class="hard">IS THE WAY</span>
+  </div>
+
+  <div class="os-imperative">GPS IS THE WAY</div>
+
+  <div class="os-presence">I'm Out Here</div>
+
+</section>
+
+<!-- ══ TOOLS ══════════════════════════════════════════════════ -->
+<section class="tools-section">
+  <div class="tools">
+
+    <div class="tool">
+      <span class="tool-n">01</span>
+      <p class="tool-tag">Field Tool</p>
+      <h3>GP Field Tools</h3>
+      <p>Oversized parking. Room logs. Gas logs.<br>Built in the field. Used in the field.</p>
+      <div class="tool-foot">
+        <span class="badge live">⟧ Live</span>
+        <a href="https://gps1448.github.io/groundpilotservice/field-tools.html" class="tool-link">Open Tool</a>
+      </div>
+    </div>
+
+    <div class="tool">
+      <span class="tool-n">02</span>
+      <p class="tool-tag">Evolving Reviews</p>
+      <h3>USAble Reviews</h3>
+      <p>Hotels. Smoking rooms. Truck stops. Rest areas.<br>Scored 0–3. Always updating. Never finished.</p>
+      <div class="tool-foot">
+        <span class="badge live">⟧ Active</span>
+        <!-- SWAP: replace # with your Gumroad USAble Reviews URL -->
+        <a href="#" class="tool-link pending">Link Coming</a>
+      </div>
+    </div>
+
+    <div class="tool">
+      <span class="tool-n">03</span>
+      <p class="tool-tag">Living Document</p>
+      <h3>Road Knowledge</h3>
+      <p>What the road teaches.<br>Written down so you don't learn it the hard way.</p>
+      <div class="tool-foot">
+        <span class="badge build">⟦ In Development</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ CLOSING STACK ══════════════════════════════════════════
+     THIS IS THE WAY  ← pointing at the work just shown
+     GPS IS THE WAY   ← the company is the doctrine
+     Follow Me        ← the invitation drops in, personal weight
+     I'm Out Here     ← 💥 gold / final / closes the loop
+════════════════════════════════════════════════════════════ -->
+<section class="close-stack">
+  <div class="stack">
+    <div class="cs-declare">THIS IS THE WAY</div>
+    <div class="cs-gps">GPS IS THE WAY</div>
+    <div class="cs-follow">Follow Me</div>
+    <div class="cs-out">I'M OUT HERE</div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ═════════════════════════════════════════════════ -->
+<footer>
+  <div class="foot">
+    <div class="foot-id">
+      Ground Pilot Service LLC &nbsp;·&nbsp; Texas LLC &nbsp;·&nbsp; Est. April 2019<br>
+      <a href="mailto:gps@groundpilotservice.com">gps@groundpilotservice.com</a>
+    </div>
+    <div class="foot-right">
+      Active Field Logging<br>
+      Crossing the US
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

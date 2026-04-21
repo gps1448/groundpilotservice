@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GP Field Tools</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dark: #8B6914;
+    --black: #0A0A0A;
+    --dark: #111111;
+    --dark2: #1A1A1A;
+    --dark3: #222222;
+    --white: #F0EDE6;
+    --dim: #666660;
+    --green: #4A9B5A;
+    --blue: #4A7A9B;
+    --red: #9B4A4A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    padding: 16px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--gold-dark);
+    margin-bottom: 20px;
+  }
+  .header-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .header-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    color: var(--dim);
+    background: var(--dark2);
+    transition: all 0.2s;
+  }
+  .tab.active {
+    border-color: var(--gold-dark);
+    color: var(--gold);
+    background: #1A1500;
+  }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #1E1E1E;
+  }
+
+  /* FIELD */
+  .field {
+    margin-bottom: 10px;
+  }
+  .field label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    background: var(--dark2);
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    color: var(--white);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--gold-dark);
+  }
+  .field textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+  }
+
+  /* FIELD ROW */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .field-row.three {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  /* SCORE BUTTONS */
+  .score-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .score-label {
+    font-size: 12px;
+    color: var(--white);
+    flex: 1;
+    padding: 8px 0;
+  }
+  .score-btn {
+    width: 40px;
+    height: 36px;
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    background: var(--dark2);
+    color: var(--dim);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .score-btn:hover { border-color: var(--gold-dark); color: var(--white); }
+  .score-btn.selected-0 { background: var(--red); border-color: var(--red); color: var(--white); }
+  .score-btn.selected-1 { background: #5A4A1A; border-color: var(--gold-dark); color: var(--gold); }
+  .score-btn.selected-2 { background: #3A5A2A; border-color: #4A7A3A; color: #7ABA6A; }
+  .score-btn.selected-3 { background: var(--green); border-color: var(--green); color: var(--white); }
+
+  /* YES/NO */
+  .yn-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .yn-label {
+    font-size: 12px;
+    color: var(--white);
+    flex: 1;
+  }
+  .yn-btn {
+    padding: 6px 14px;
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    background: var(--dark2);
+    color: var(--dim);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .yn-btn.yes.selected { background: var(--green); border-color: var(--green); color: var(--white); }
+  .yn-btn.no.selected { background: var(--red); border-color: var(--red); color: var(--white); }
+
+  /* MEASURE DISPLAY */
+  .measure-box {
+    background: var(--dark3);
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .measure-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .measure-hint {
+    font-size: 11px;
+    color: var(--dim);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* TACOMA SCALE */
+  .tacoma-scale {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .tacoma-unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+  }
+
+  /* OUTPUT */
+  .output-box {
+    background: var(--dark3);
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    padding: 16px;
+    margin-top: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--white);
+    white-space: pre-wrap;
+    min-height: 100px;
+  }
+  .output-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* BUTTONS */
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 3px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-gold {
+    background: var(--gold-dark);
+    color: var(--white);
+  }
+  .btn-gold:hover { background: var(--gold); color: var(--black); }
+  .btn-clear {
+    background: transparent;
+    color: var(--dim);
+    border: 1px solid #2A2A2A;
+  }
+  .btn-clear:hover { border-color: var(--dim); color: var(--white); }
+  .btn-copy {
+    background: var(--blue);
+    color: var(--white);
+    opacity: 0.8;
+  }
+  .btn-copy:hover { opacity: 1; }
+
+  /* TOTAL SCORE */
+  .total-display {
+    text-align: center;
+    padding: 16px;
+    background: var(--dark2);
+    border: 1px solid #2A2A2A;
+    border-radius: 3px;
+    margin-top: 16px;
+  }
+  .total-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .total-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid #1E1E1E;
+    margin: 16px 0;
+  }
+
+  .note {
+    font-size: 11px;
+    color: var(--dim);
+    font-style: italic;
+    padding: 8px 0;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">G P</div>
+  <div class="header-sub">Ground Pilot — Field Tools</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('parking')">⬛ OVR Parking</div>
+  <div class="tab" onclick="switchTab('room')">🚬 Room Log</div>
+  <div class="tab" onclick="switchTab('gas')">⛽ Gas Log</div>
+</div>
+
+<!-- ============ PARKING PANEL ============ -->
+<div id="panel-parking" class="panel active">
+
+  <div class="section">
+    <div class="section-title">Location</div>
+    <div class="field">
+      <label>Spot Name / Description</label>
+      <input type="text" id="p-name" placeholder="e.g. Industrial yard off Hwy 177, Ponca City OK">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>State</label>
+        <input type="text" id="p-state" placeholder="OK">
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="p-date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Nearest Cross Street / Mile Marker</label>
+      <input type="text" id="p-cross" placeholder="e.g. Hwy 177 & Industrial Dr">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Entrance Measurements</div>
+    <div class="measure-box">
+      <div class="measure-title">Entrance Width</div>
+      <div class="field-row three">
+        <div class="field">
+          <label>Feet</label>
+          <input type="number" id="p-width-ft" placeholder="0" oninput="calcTacomas()">
+        </div>
+        <div class="field">
+          <label>Inches</label>
+          <input type="number" id="p-width-in" placeholder="0" oninput="calcTacomas()">
+        </div>
+        <div class="field">
+          <label>≈ Tacomas Wide</label>
+          <input type="text" id="p-tacomas" placeholder="—" readonly style="color:var(--gold);">
+        </div>
+      </div>
+      <div class="measure-hint">Tacoma = ~6ft wide. Your load = 13ft 11in. Need 2.5+ Tacomas minimum.</div>
+    </div>
+
+    <div class="measure-box">
+      <div class="measure-title">Overhead Clearance</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Feet</label>
+          <input type="number" id="p-height-ft" placeholder="0">
+        </div>
+        <div class="field">
+          <label>Inches</label>
+          <input type="number" id="p-height-in" placeholder="0">
+        </div>
+      </div>
+      <div class="measure-hint">Your pole height = 15ft 9in. Need clearance above that.</div>
+    </div>
+
+    <div class="measure-box">
+      <div class="measure-title">Depth / Pull-Through Length</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Approximate Feet</label>
+          <input type="number" id="p-depth" placeholder="0">
+        </div>
+        <div class="field">
+          <label>≈ Tacomas Long</label>
+          <input type="text" id="p-depth-t" placeholder="—" readonly style="color:var(--gold);">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Surface & Grade</div>
+    <div class="yn-group">
+      <span class="yn-label">Surface: Paved</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-paved','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-paved','no')">NO</button>
+      <input type="hidden" id="p-paved">
+    </div>
+    <div class="yn-group">
+      <span class="yn-label">Surface: Gravel</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-gravel','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-gravel','no')">NO</button>
+      <input type="hidden" id="p-gravel">
+    </div>
+    <div class="yn-group">
+      <span class="yn-label">Level (no slope at entrance)</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-level','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-level','no')">NO</button>
+      <input type="hidden" id="p-level">
+    </div>
+    <div class="yn-group">
+      <span class="yn-label">Elevated Entry (ramp up)</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-elevated','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-elevated','no')">NO</button>
+      <input type="hidden" id="p-elevated">
+    </div>
+    <div class="yn-group">
+      <span class="yn-label">Depressed Entry (ramp down)</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-depressed','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-depressed','no')">NO</button>
+      <input type="hidden" id="p-depressed">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Conditions</div>
+    <div class="yn-group">
+      <span class="yn-label">Lit at Night</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-lit','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-lit','no')">NO</button>
+      <input type="hidden" id="p-lit">
+    </div>
+    <div class="yn-group">
+      <span class="yn-label">24hr Access</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-24hr','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-24hr','no')">NO</button>
+      <input type="hidden" id="p-24hr">
+    </div>
+    <div class="yn-group">
+      <span class="yn-label">Trucks Present When Surveyed</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-trucks','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-trucks','no')">NO</button>
+      <input type="hidden" id="p-trucks">
+    </div>
+    <div class="yn-group">
+      <span class="yn-label">Pull-Through (no backing needed)</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'p-pullthru','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'p-pullthru','no')">NO</button>
+      <input type="hidden" id="p-pullthru">
+    </div>
+    <div class="field">
+      <label>Approx Trucks There When Surveyed</label>
+      <input type="number" id="p-truckcount" placeholder="0">
+    </div>
+    <div class="field">
+      <label>Time of Survey</label>
+      <input type="time" id="p-time">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Notes</div>
+    <div class="field">
+      <textarea id="p-notes" placeholder="Anything else a driver needs to know. Obstacles, neighbors, gate hours, cop presence, anything."></textarea>
+    </div>
+    <div class="field">
+      <label>Video Link (YouTube / TikTok)</label>
+      <input type="text" id="p-video" placeholder="https://youtu.be/...">
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="generateParking()">Generate Pin Data</button>
+    <button class="btn btn-clear" onclick="clearParking()">Clear</button>
+  </div>
+
+  <div id="parking-output" style="display:none;">
+    <div class="output-title" style="margin-top:20px;">📍 Pin Data — Copy to Google My Maps</div>
+    <div class="output-box" id="parking-text"></div>
+    <div class="btn-row">
+      <button class="btn btn-copy" onclick="copyOutput('parking-text')">Copy to Clipboard</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ ROOM PANEL ============ -->
+<div id="panel-room" class="panel">
+
+  <div class="section">
+    <div class="section-title">Property</div>
+    <div class="field">
+      <label>Hotel Name</label>
+      <input type="text" id="r-name" placeholder="e.g. Motel 6 Ponca City OK">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>State</label>
+        <input type="text" id="r-state" placeholder="OK">
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="r-date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Address</label>
+      <input type="text" id="r-address" placeholder="Street address">
+    </div>
+    <div class="field">
+      <label>Video Link</label>
+      <input type="text" id="r-video" placeholder="https://youtu.be/...">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Room Score — 0 to 3 each</div>
+    <p class="note">0 = none/fail &nbsp;|&nbsp; 1 = worst (horizontal key) &nbsp;|&nbsp; 2 = okay &nbsp;|&nbsp; 3 = best (instant hot, touch key, glass ashtray)</p>
+    <br>
+
+    <div class="score-group">
+      <span class="score-label">Key Type</span>
+      <button class="score-btn" onclick="setScore(this,'r-key',0)">0</button>
+      <button class="score-btn" onclick="setScore(this,'r-key',1)">1</button>
+      <button class="score-btn" onclick="setScore(this,'r-key',2)">2</button>
+      <button class="score-btn" onclick="setScore(this,'r-key',3)">3</button>
+      <input type="hidden" id="r-key" value="">
+    </div>
+    <p class="note" style="margin-bottom:8px;">0=regular key | 1=horizontal insert | 2=vertical insert | 3=touch/tap</p>
+
+    <div class="score-group">
+      <span class="score-label">Hot Water Speed</span>
+      <button class="score-btn" onclick="setScore(this,'r-water',0)">0</button>
+      <button class="score-btn" onclick="setScore(this,'r-water',1)">1</button>
+      <button class="score-btn" onclick="setScore(this,'r-water',2)">2</button>
+      <button class="score-btn" onclick="setScore(this,'r-water',3)">3</button>
+      <input type="hidden" id="r-water" value="">
+    </div>
+    <p class="note" style="margin-bottom:8px;">0=no hot | 1=slow | 2=moderate | 3=instant hellfire</p>
+
+    <div class="score-group">
+      <span class="score-label">Ashtray</span>
+      <button class="score-btn" onclick="setScore(this,'r-ashtray',0)">0</button>
+      <button class="score-btn" onclick="setScore(this,'r-ashtray',1)">1</button>
+      <button class="score-btn" onclick="setScore(this,'r-ashtray',2)">2</button>
+      <button class="score-btn" onclick="setScore(this,'r-ashtray',3)">3</button>
+      <input type="hidden" id="r-ashtray" value="">
+    </div>
+    <p class="note" style="margin-bottom:8px;">0=none | 1=cheap plastic | 2=decent | 3=glass/heavy</p>
+
+    <div class="score-group">
+      <span class="score-label">Outlets</span>
+      <button class="score-btn" onclick="setScore(this,'r-outlets',0)">0</button>
+      <button class="score-btn" onclick="setScore(this,'r-outlets',1)">1</button>
+      <button class="score-btn" onclick="setScore(this,'r-outlets',2)">2</button>
+      <button class="score-btn" onclick="setScore(this,'r-outlets',3)">3</button>
+      <input type="hidden" id="r-outlets" value="">
+    </div>
+
+    <div class="score-group">
+      <span class="score-label">Microwave</span>
+      <button class="score-btn" onclick="setScore(this,'r-micro',0)">0</button>
+      <button class="score-btn" onclick="setScore(this,'r-micro',1)">1</button>
+      <button class="score-btn" onclick="setScore(this,'r-micro',2)">2</button>
+      <button class="score-btn" onclick="setScore(this,'r-micro',3)">3</button>
+      <input type="hidden" id="r-micro" value="">
+    </div>
+
+    <div class="score-group">
+      <span class="score-label">View</span>
+      <button class="score-btn" onclick="setScore(this,'r-view',0)">0</button>
+      <button class="score-btn" onclick="setScore(this,'r-view',1)">1</button>
+      <button class="score-btn" onclick="setScore(this,'r-view',2)">2</button>
+      <button class="score-btn" onclick="setScore(this,'r-view',3)">3</button>
+      <input type="hidden" id="r-view" value="">
+    </div>
+
+    <div class="score-group">
+      <span class="score-label">Staff</span>
+      <button class="score-btn" onclick="setScore(this,'r-staff',0)">0</button>
+      <button class="score-btn" onclick="setScore(this,'r-staff',1)">1</button>
+      <button class="score-btn" onclick="setScore(this,'r-staff',2)">2</button>
+      <button class="score-btn" onclick="setScore(this,'r-staff',3)">3</button>
+      <input type="hidden" id="r-staff" value="">
+    </div>
+
+    <div id="room-total" class="total-display" style="display:none;">
+      <div class="total-number" id="room-score-num">—</div>
+      <div class="total-label">out of 21</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Oversized Parking on Property?</div>
+    <div class="yn-group">
+      <span class="yn-label">Can an oversized load park here?</span>
+      <button class="yn-btn yes" onclick="toggleYN(this,'r-ovr','yes')">YES</button>
+      <button class="yn-btn no" onclick="toggleYN(this,'r-ovr','no')">NO</button>
+      <input type="hidden" id="r-ovr">
+    </div>
+    <div class="field">
+      <label>Parking Notes (if yes)</label>
+      <input type="text" id="r-ovr-notes" placeholder="e.g. Large lot east side, no overhead, level">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Notes</div>
+    <div class="field">
+      <textarea id="r-notes" placeholder="Anything worth saying. Good, bad, funny, real."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="generateRoom()">Generate Pin Data</button>
+    <button class="btn btn-clear" onclick="clearRoom()">Clear</button>
+  </div>
+
+  <div id="room-output" style="display:none;">
+    <div class="output-title" style="margin-top:20px;">📍 Pin Data — Copy to Google My Maps</div>
+    <div class="output-box" id="room-text"></div>
+    <div class="btn-row">
+      <button class="btn btn-copy" onclick="copyOutput('room-text')">Copy to Clipboard</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ GAS PANEL ============ -->
+<div id="panel-gas" class="panel">
+
+  <div class="section">
+    <div class="section-title">Gas Log Entry</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="g-date">
+      </div>
+      <div class="field">
+        <label>State</label>
+        <input type="text" id="g-state" placeholder="OK">
+      </div>
+    </div>
+    <div class="field">
+      <label>Location / Station Name</label>
+      <input type="text" id="g-location" placeholder="e.g. Flying J Ponca City OK">
+    </div>
+    <div class="field-row three">
+      <div class="field">
+        <label>Gallons</label>
+        <input type="number" id="g-gallons" placeholder="0.0" step="0.01" oninput="calcGas()">
+      </div>
+      <div class="field">
+        <label>Price/Gal</label>
+        <input type="number" id="g-price" placeholder="0.00" step="0.01" oninput="calcGas()">
+      </div>
+      <div class="field">
+        <label>Total $</label>
+        <input type="text" id="g-total" placeholder="—" readonly style="color:var(--gold);">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Odometer</label>
+        <input type="number" id="g-odo" placeholder="123000">
+      </div>
+      <div class="field">
+        <label>Job / Load #</label>
+        <input type="text" id="g-job" placeholder="e.g. 4048095">
+      </div>
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <input type="text" id="g-notes" placeholder="e.g. Fueled before route survey">
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-gold" onclick="generateGas()">Generate Log Entry</button>
+    <button class="btn btn-clear" onclick="clearGas()">Clear</button>
+  </div>
+
+  <div id="gas-output" style="display:none;">
+    <div class="output-title" style="margin-top:20px;">⛽ Gas Log Entry</div>
+    <div class="output-box" id="gas-text"></div>
+    <div class="btn-row">
+      <button class="btn btn-copy" onclick="copyOutput('gas-text')">Copy to Clipboard</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// TABS
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['parking','room','gas'][i] === tab);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// SCORE BUTTONS
+function setScore(btn, id, val) {
+  const group = btn.parentElement;
+  group.querySelectorAll('.score-btn').forEach(b => {
+    b.className = 'score-btn';
+  });
+  btn.classList.add('selected-' + val);
+  document.getElementById(id).value = val;
+  updateRoomTotal();
+}
+
+function updateRoomTotal() {
+  const fields = ['r-key','r-water','r-ashtray','r-outlets','r-micro','r-view','r-staff'];
+  let total = 0;
+  let allSet = true;
+  fields.forEach(f => {
+    const v = document.getElementById(f).value;
+    if (v === '') allSet = false;
+    else total += parseInt(v);
+  });
+  if (allSet || total > 0) {
+    document.getElementById('room-total').style.display = 'block';
+    document.getElementById('room-score-num').textContent = total;
+  }
+}
+
+// YES/NO
+function toggleYN(btn, id, val) {
+  const group = btn.parentElement;
+  group.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById(id).value = val;
+}
+
+// TACOMA CALC (Tacoma ~6ft wide)
+function calcTacomas() {
+  const ft = parseFloat(document.getElementById('p-width-ft').value) || 0;
+  const inch = parseFloat(document.getElementById('p-width-in').value) || 0;
+  const total = ft + inch/12;
+  if (total > 0) {
+    const tacomas = (total / 6).toFixed(1);
+    document.getElementById('p-tacomas').value = tacomas + 'T';
+  }
+  const depth = parseFloat(document.getElementById('p-depth')?.value) || 0;
+  if (depth > 0) {
+    document.getElementById('p-depth-t').value = (depth/19).toFixed(1) + 'T';
+  }
+}
+
+// GAS CALC
+function calcGas() {
+  const gal = parseFloat(document.getElementById('g-gallons').value) || 0;
+  const price = parseFloat(document.getElementById('g-price').value) || 0;
+  if (gal && price) {
+    document.getElementById('g-total').value = '$' + (gal * price).toFixed(2);
+  }
+}
+
+// GENERATE PARKING
+function generateParking() {
+  const name = document.getElementById('p-name').value || 'Unnamed Spot';
+  const state = document.getElementById('p-state').value || '—';
+  const date = document.getElementById('p-date').value || '—';
+  const cross = document.getElementById('p-cross').value || '—';
+  const wft = document.getElementById('p-width-ft').value || '0';
+  const win = document.getElementById('p-width-in').value || '0';
+  const tac = document.getElementById('p-tacomas').value || '—';
+  const hft = document.getElementById('p-height-ft').value || '—';
+  const hin = document.getElementById('p-height-in').value || '—';
+  const depth = document.getElementById('p-depth').value || '—';
+  const deptht = document.getElementById('p-depth-t').value || '—';
+  const notes = document.getElementById('p-notes').value || '—';
+  const video = document.getElementById('p-video').value || '—';
+  const truckcount = document.getElementById('p-truckcount').value || '0';
+  const time = document.getElementById('p-time').value || '—';
+
+  const yn = (id) => document.getElementById(id).value || '—';
+
+  const out = `GP OVERSIZED PARKING
+━━━━━━━━━━━━━━━━━━━━━━━━━
+${name}
+State: ${state} | Surveyed: ${date} @ ${time}
+Cross: ${cross}
+
+ENTRANCE
+  Width: ${wft}ft ${win}in (≈${tac} Tacomas)
+  Clearance: ${hft}ft ${hin}in
+  Depth: ${depth}ft (≈${deptht} Tacomas long)
+
+SURFACE
+  Paved: ${yn('p-paved')} | Gravel: ${yn('p-gravel')}
+  Level: ${yn('p-level')}
+  Elevated: ${yn('p-elevated')} | Depressed: ${yn('p-depressed')}
+
+CONDITIONS
+  Lit night: ${yn('p-lit')} | 24hr: ${yn('p-24hr')}
+  Pull-through: ${yn('p-pullthru')}
+  Trucks present: ${yn('p-trucks')} (${truckcount} counted)
+
+NOTES
+  ${notes}
+
+VIDEO: ${video}
+━━━━━━━━━━━━━━━━━━━━━━━━━
+GPS — Ground Pilot Service`;
+
+  document.getElementById('parking-text').textContent = out;
+  document.getElementById('parking-output').style.display = 'block';
+}
+
+// GENERATE ROOM
+function generateRoom() {
+  const name = document.getElementById('r-name').value || 'Unnamed Property';
+  const state = document.getElementById('r-state').value || '—';
+  const date = document.getElementById('r-date').value || '—';
+  const addr = document.getElementById('r-address').value || '—';
+  const video = document.getElementById('r-video').value || '—';
+  const notes = document.getElementById('r-notes').value || '—';
+  const ovr = document.getElementById('r-ovr').value || '—';
+  const ovrNotes = document.getElementById('r-ovr-notes').value || '—';
+
+  const score = (id) => {
+    const v = document.getElementById(id).value;
+    return v !== '' ? v : '—';
+  };
+
+  const fields = ['r-key','r-water','r-ashtray','r-outlets','r-micro','r-view','r-staff'];
+  let total = 0;
+  fields.forEach(f => { const v = document.getElementById(f).value; if(v !== '') total += parseInt(v); });
+
+  const out = `GP SMOKING ROOM LOG
+━━━━━━━━━━━━━━━━━━━━━━━━━
+${name}
+${addr}
+State: ${state} | Date: ${date}
+
+SCORE: ${total}/21
+  Key:       ${score('r-key')}/3
+  Hot Water:  ${score('r-water')}/3
+  Ashtray:   ${score('r-ashtray')}/3
+  Outlets:   ${score('r-outlets')}/3
+  Microwave: ${score('r-micro')}/3
+  View:      ${score('r-view')}/3
+  Staff:     ${score('r-staff')}/3
+
+OVERSIZED PARKING: ${ovr}
+  ${ovrNotes}
+
+NOTES
+  ${notes}
+
+VIDEO: ${video}
+━━━━━━━━━━━━━━━━━━━━━━━━━
+GPS — Ground Pilot Service`;
+
+  document.getElementById('room-text').textContent = out;
+  document.getElementById('room-output').style.display = 'block';
+}
+
+// GENERATE GAS
+function generateGas() {
+  const date = document.getElementById('g-date').value || '—';
+  const state = document.getElementById('g-state').value || '—';
+  const loc = document.getElementById('g-location').value || '—';
+  const gal = document.getElementById('g-gallons').value || '—';
+  const price = document.getElementById('g-price').value || '—';
+  const total = document.getElementById('g-total').value || '—';
+  const odo = document.getElementById('g-odo').value || '—';
+  const job = document.getElementById('g-job').value || '—';
+  const notes = document.getElementById('g-notes').value || '—';
+
+  const out = `GAS LOG
+━━━━━━━━━━━━━━━━━━━━━━━━━
+Date: ${date} | State: ${state}
+Location: ${loc}
+Gallons: ${gal} @ $${price}/gal = ${total}
+Odometer: ${odo}
+Job/Load: ${job}
+Notes: ${notes}
+━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+  document.getElementById('gas-text').textContent = out;
+  document.getElementById('gas-output').style.display = 'block';
+}
+
+// COPY
+function copyOutput(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Copied to clipboard. Paste into Google My Maps.');
+  });
+}
+
+// CLEAR
+function clearParking() {
+  ['p-name','p-state','p-cross','p-width-ft','p-width-in','p-tacomas',
+   'p-height-ft','p-height-in','p-depth','p-depth-t','p-notes','p-video',
+   'p-truckcount','p-time','p-paved','p-gravel','p-level','p-elevated',
+   'p-depressed','p-lit','p-24hr','p-trucks','p-pullthru'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('parking-output').style.display = 'none';
+}
+
+function clearRoom() {
+  ['r-name','r-state','r-date','r-address','r-video','r-notes',
+   'r-key','r-water','r-ashtray','r-outlets','r-micro','r-view','r-staff',
+   'r-ovr','r-ovr-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.querySelectorAll('.score-btn').forEach(b => b.className = 'score-btn');
+  document.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('room-output').style.display = 'none';
+  document.getElementById('room-total').style.display = 'none';
+}
+
+function clearGas() {
+  ['g-date','g-state','g-location','g-gallons','g-price','g-total','g-odo','g-job','g-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('gas-output').style.display = 'none';
+}
+
+// Set today's date on load
+const today = new Date().toISOString().split('T')[0];
+['p-date','r-date','g-date'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el) el.value = today;
+});
+</script>
+</body>
+</html>
